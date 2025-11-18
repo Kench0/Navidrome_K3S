@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: navidrome
+  namespace: navidrome
+  labels:
+    app: navidrome
+spec:
+  serviceName: navi
+  replicas: 1
+  selector:
+    matchLabels:
+      app: navidrome
+  template:
+    metadata:
+      labels:
+        app: navidrome
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        supplementalGroups: [1000]
+      containers:
+        - name: navidrome
+          image: deluan/navidrome:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4533
+          env:
+            - name: ND_SCANSCHEDULE
+              value: "1h"
+            - name: ND_LOGLEVEL
+              value: info
+            - name: ND_SESSIONTIMEOUT
+              value: 24h
+            - name: ND_BASEURL
+              value: ""
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Moscow
+          volumeMounts:
+            - name: music
+              mountPath: /music
+              readOnly: true
+            - name: data
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4533
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4533
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: music
+          persistentVolumeClaim:
+            claimName: music
