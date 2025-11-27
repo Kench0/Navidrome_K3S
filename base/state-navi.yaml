@@ -25,29 +25,20 @@ spec:
         - name: navidrome
           image: deluan/navidrome:latest
           imagePullPolicy: IfNotPresent
+          args:
+            - --configfile
+            - /config/navidrome.toml
           ports:
             - containerPort: 4533
-          env:
-            - name: ND_SCANSCHEDULE
-              value: "1h"
-            - name: ND_LOGLEVEL
-              value: info
-            - name: ND_SESSIONTIMEOUT
-              value: 24h
-            - name: ND_BASEURL
-              value: ""
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            - name: TZ
-              value: Europe/Moscow
           volumeMounts:
             - name: music
               mountPath: /music
               readOnly: true
             - name: data
               mountPath: /data
+            - name: navidrome-config
+              mountPath: /config
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /
@@ -71,3 +62,10 @@ spec:
         - name: music
           persistentVolumeClaim:
             claimName: music
+        - name: navidrome-config
+          configMap:
+            name: env-navi
+            items:
+              - key: navidrome.toml
+                path: navidrome.toml
+            

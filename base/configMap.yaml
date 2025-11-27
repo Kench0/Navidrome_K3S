@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: navidrome
+  name: env-navi
+data:
+  navidrome.toml: |
+    BaseUrl = ""
+    ScanSchedule = "1h"
+    LogLevel = "info"
+    EnableInsightsCollector = false
+    Agents = "lastfm,spotify,deezer"
+    AutoImportPlaylists = true
+    CoverJpegQuality = 100
+    DeezerEnabled = true
+    DefaultLanguage = "ru"
+    DefaultTheme = "Spotify-ish"
+    DefaultDownloadableShare = true
+    EnableSharing = true
+    SessionTimeout = "5h"
+    UiWelcomeMessage = "Kench music"
+    ND_PID_ALBUM = "	musicbrainz_albumid|album,albumartistid,albumversion,releasedate"
+    PUID= "1000"
+    PGID= "1000"
+    TZ= "Europe/Moscow"
